@@ -73,9 +73,9 @@ func toRGBA(val byte) (r, g, b, a uint32) {
 		}
 	case val < 232:
 		tmp = uint32(val) - 16
-		r = tmp / 36 // "z"
-		g = r / 6    // "y"
-		b = tmp % 6  // "x"
+		r = tmp / 36     // "z"
+		g = tmp % 36 / 6 // "y"
+		b = tmp % 6      // "x"
 
 		if r > 0 {
 			r = 95 + 40*(r-1)
@@ -84,11 +84,11 @@ func toRGBA(val byte) (r, g, b, a uint32) {
 			g = 95 + 40*(g-1)
 		}
 		if b > 0 {
-			b = 95 + 40*(g-1)
+			b = 95 + 40*(b-1)
 		}
 	default:
 		tmp = uint32(val) - 232
-		tmp = 8 + 10*(tmp-1)
+		tmp = 8 + 10*tmp
 		r, g, b = tmp, tmp, tmp
 	}
 
