@@ -1,5 +1,5 @@
-color
-=====
+term.color
+==========
 
 image/color style model for 256 color terminals
 
