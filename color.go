@@ -133,7 +133,7 @@ func greyscaleFromRGBA(r, g, b, a uint32) (val byte) {
 	tmp = tmp / 10
 	val = 232 + byte(tmp)
 
-	if val > 255 {
+	if byte(tmp) > 23 {
 		return 231
 	}
 	return

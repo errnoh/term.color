@@ -31,3 +31,35 @@ func TestToRGBA(t *testing.T) {
 		}
 	}
 }
+
+func TestFromRGBA(t *testing.T) {
+	var fromRGBATests = []colorTest{
+		{16, color.RGBA{0, 0, 0, 0}}, {17, color.RGBA{0, 0, 95, 0}}, {18, color.RGBA{0, 0, 135, 0}}, {24, color.RGBA{0, 95, 135, 0}}, {231, color.RGBA{255, 255, 255, 0}},
+		{16, color.RGBA{74, 74, 74, 0}}, {59, color.RGBA{75, 75, 75, 0}}, {102, color.RGBA{115, 115, 115, 0}},
+	}
+
+	for _, pair := range fromRGBATests {
+		expected := pair.val
+		result := Term256Model.Convert(pair.rgba).(Term256)
+
+		if expected != result.Val {
+			t.Fatalf("Converted %#v, expected %d, got %d", pair.rgba, expected, result.Val)
+		}
+	}
+}
+
+func TestGreyscaleFromRGBA(t *testing.T) {
+	var fromRGBATests = []colorTest{
+		{16, color.RGBA{0, 0, 0, 0}}, {232, color.RGBA{4, 4, 4, 0}}, {232, color.RGBA{12, 12, 12, 0}}, {233, color.RGBA{13, 13, 13, 0}}, {233, color.RGBA{22, 22, 22, 0}},
+		{255, color.RGBA{242, 242, 242, 0}}, {231, color.RGBA{243, 243, 243, 0}}, {231, color.RGBA{255, 255, 255, 0}},
+	}
+
+	for _, pair := range fromRGBATests {
+		expected := pair.val
+		result := Term256GreyscaleModel.Convert(pair.rgba).(Term256)
+
+		if expected != result.Val {
+			t.Fatalf("Converted %#v, expected %d, got %d", pair.rgba, expected, result.Val)
+		}
+	}
+}
