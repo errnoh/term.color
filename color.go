@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style (2-Clause)
 // license that can be found in the LICENSE file.
 
+// Package color handles conversion from 256 color terminal colors into other color models.
 package color
 
 import (
 	"image/color"
 )
 
-// TODO: image/color style
-
+// Term256 satisfies color.Color interface, complete with color.ModelFuncs for converting between color models.
 type Term256 struct {
 	Val uint8
 }
