@@ -3,7 +3,7 @@ term.color
 
 image/color style model for 256 color terminals
 
-![term.colorwheel](errnoh.github.com/term.color/colorwheel.png)
+![term.colorwheel](https://raw.github.com/errnoh/term.color/master/colorwheel.png)
 
 To convert color.Color to closest 256 color terminal value you can do:
 
