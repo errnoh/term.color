@@ -42,12 +42,12 @@ func drawcircle(buf *tbi.Buffer, colors bool) {
 	r := img.Bounds()
 	for x := r.Min.X; x < r.Max.X; x++ {
 		for y := r.Min.Y; y < r.Max.Y; y++ {
-			r, g, b, _ := img.At(x, y).RGBA()
+			c := img.At(x, y)
 			var val byte
 			if colors {
-				val = color.FromRGBuint32(r, g, b)
+                            val = color.Term256Model.Convert(c).(color.Term256).Val
 			} else {
-				val = color.GreyscaleFromRGB(byte(r), byte(g), byte(b))
+                            val = color.Term256GreyscaleModel.Convert(c).(color.Term256).Val
 			}
 			// font height:width is quite close to 2:1 so fill 2 columns for each row
 			buf.Set(2*x, y, ' ', 0, val)

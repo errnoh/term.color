@@ -4,11 +4,50 @@
 
 package color
 
+import (
+	"image/color"
+)
+
 // TODO: image/color style
 
+type Term256 struct {
+	Val uint8
+}
+
+func (c Term256) RGBA() (r, g, b, a uint32) {
+	r, g, b, a = toRGBA(c.Val)
+	r |= r << 8
+	g |= g << 8
+	b |= b << 8
+	return
+}
+
+func term256Model(c color.Color) color.Color {
+	if _, ok := c.(Term256); ok {
+		return c
+	}
+	r, g, b, a := c.RGBA()
+	return Term256{fromRGBA(r, g, b, a)}
+}
+
+func term256GreyscaleModel(c color.Color) color.Color {
+	if val, ok := c.(Term256); ok {
+		if val.Val >= 232 {
+			return c
+		}
+	}
+	r, g, b, a := c.RGBA()
+	return Term256{greyscaleFromRGBA(r, g, b, a)}
+}
+
+var (
+	Term256Model          color.Model = color.ModelFunc(term256Model)
+	Term256GreyscaleModel color.Model = color.ModelFunc(term256GreyscaleModel)
+)
+
 // NOTE: 0 is default, 16 is actual black.
-func ToRGB(val byte) (r, g, b byte) {
-	var tmp byte
+func toRGBA(val byte) (r, g, b, a uint32) {
+	var tmp uint32
 
 	switch {
 	case val < 8:
@@ -33,7 +72,7 @@ func ToRGB(val byte) (r, g, b byte) {
 			b = 255
 		}
 	case val < 232:
-		tmp = val - 16
+		tmp = uint32(val) - 16
 		r = tmp / 36 // "z"
 		g = r / 6    // "y"
 		b = tmp % 6  // "x"
@@ -48,7 +87,7 @@ func ToRGB(val byte) (r, g, b byte) {
 			b = 95 + 40*(g-1)
 		}
 	default:
-		tmp = val - 232
+		tmp = uint32(val) - 232
 		tmp = 8 + 10*(tmp-1)
 		r, g, b = tmp, tmp, tmp
 	}
@@ -56,8 +95,12 @@ func ToRGB(val byte) (r, g, b byte) {
 	return
 }
 
-func FromRGB(r, g, b byte) (val byte) {
+func fromRGBA(r, g, b, a uint32) (val byte) {
 	// 0-74 == 0, 75-114 = 1, etc
+	r = r &^ 0xffffff00
+	g = g &^ 0xffffff00
+	b = b &^ 0xffffff00
+
 	if r >= 35 {
 		r -= 35
 	}
@@ -69,19 +112,19 @@ func FromRGB(r, g, b byte) (val byte) {
 	}
 	r, g, b = r/40, g/40, b/40
 
-	val = 16 + r*36
-	val = val + g*6
-	val = val + b
+	val = 16 + uint8(r)*36
+	val = val + uint8(g)*6
+	val = val + uint8(b)
 	return
 }
 
-func FromRGBuint32(r, g, b uint32) byte {
-	return FromRGB(uint8(r), uint8(g), uint8(b))
-}
-
 // Intensity
-func GreyscaleFromRGB(r, g, b byte) (val byte) {
-	tmp := (int(r) + int(g) + int(b)) / 3
+func greyscaleFromRGBA(r, g, b, a uint32) (val byte) {
+	r = r &^ 0xffffff00
+	g = g &^ 0xffffff00
+	b = b &^ 0xffffff00
+
+	tmp := (r + g + b) / 3
 	if tmp >= 3 {
 		tmp -= 3
 	} else {
